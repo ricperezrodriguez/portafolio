@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+
+  database:
+    container_name: miMongoDB
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - miportafolio-data:/data/db
+    #environment:
+      #- MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      #- MONGO_INITDB_ROOT_PASSWORD=ricardo
+
+  nodejs-app:
+    container_name: backend-node
+    restart: always
+    build: ./nodejs-app
+    ports:
+      - "3700:3700"
+    volumes: 
+      - ./nodejs-app:/app
+    links:
+      - database
+    
+  angular-ui:
+    container_name: frontend-angular
+    restart: always
+    build: ./angular-ui
+    command: sh -c "ng serve --host 0.0.0.0 --poll 200"
+    ports:
+      - "4200:4200"
+    volumes: 
+      - ./angular-ui:/usr/src/app/app-ui
+    links:
+      - nodejs-app
+  
+
+volumes:
+  miportafolio-data:
